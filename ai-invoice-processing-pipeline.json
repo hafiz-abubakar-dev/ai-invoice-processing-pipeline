@@ -1,0 +1,484 @@
+{
+  "name": "Inovice Parser",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Invioce Parser",
+        "formDescription": "Upload invioce to parse the information into CRM",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Invioce",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -784,
+        -752
+      ],
+      "id": "8bed4430-b986-4b98-9cc9-12fb536af566",
+      "name": "Trigger: Invoice Form Upload",
+      "webhookId": "c71fb5fc-b66e-496c-a3f3-b7678039f197"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Invioce",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -576,
+        -736
+      ],
+      "id": "bbb2b522-74cf-473e-b02d-e8b5a6336c11",
+      "name": "Extract: PDF Raw Text"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Invioce Number",
+              "description": "Extract the exact invoice number (such as INV-10012) from the document text.",
+              "required": true
+            },
+            {
+              "name": "Sender Name",
+              "description": "invioce sender name",
+              "required": true
+            },
+            {
+              "name": "Customer Phone Number",
+              "description": "customer phone number ",
+              "required": true
+            },
+            {
+              "name": "Sender Email",
+              "description": "Sender email",
+              "required": true
+            },
+            {
+              "name": "Sender Address",
+              "description": "sender address",
+              "required": true
+            },
+            {
+              "name": "Total Amount ",
+              "description": "Extract the final total amount",
+              "required": true
+            },
+            {
+              "name": "Invioce date ",
+              "description": "Invioce date",
+              "required": true
+            },
+            {
+              "name": "due date ",
+              "description": "Invioce due date",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        -736
+      ],
+      "id": "14bdd21c-2d78-4ede-bc93-1f625131294d",
+      "name": "AI: Parse Invoice Fields"
+    },
+    {
+      "parameters": {
+        "model": "qwen3-vl-plus",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAlibabaCloud",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -480
+      ],
+      "id": "7994496f-3206-4288-9444-57cc2a95427f",
+      "name": "Model: Qwen (Invoice Parser)",
+      "credentials": {
+        "alibabaCloudApi": {
+          "id": "",
+          "name": "Qwen Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "YOUR_AIRTABLE_BASE_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Hiader Gemstone",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID_HERE"
+        },
+        "table": {
+          "__rl": true,
+          "value": "YOUR_TABLE_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Invoice Detail",
+          "cachedResultUrl": "https://airtable.com/YOUR_AIRTABLE_BASE_ID_HERE/YOUR_TABLE_ID_HERE"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Invioce Number": "={{ $json.output['Invioce Number'] }}",
+            "Sender Name": "={{ $json.output['Sender Name'] }}",
+            "Customer Phone Number": "={{ $json.output['Customer Phone Number'] }}",
+            "Sender Email": "={{ $json.output['Sender Email'] }}",
+            "Sender Address": "={{ $json.output['Sender Address'] }}",
+            "Total Amount ": "={{ $json.output['Total Amount '] }}",
+            "Invioce date ": "={{ $json.output['Invioce date '] }}",
+            "Due Date": "={{ $json.output['due date '] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Invioce Number",
+              "displayName": "Invioce Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Sender Name",
+              "displayName": "Sender Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Customer Phone Number",
+              "displayName": "Customer Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Sender Email",
+              "displayName": "Sender Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Sender Address",
+              "displayName": "Sender Address",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Todo",
+                  "value": "Todo"
+                },
+                {
+                  "name": "In progress",
+                  "value": "In progress"
+                },
+                {
+                  "name": "Done",
+                  "value": "Done"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Total Amount ",
+              "displayName": "Total Amount ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Invioce date ",
+              "displayName": "Invioce date ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Due Date",
+              "displayName": "Due Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        -736
+      ],
+      "id": "d59f982b-af80-43e4-a722-5cfacb6cc5a9",
+      "name": "DB: Save Invoice to Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI assistant helping a company automate financial operations. Your task is to write a professional, clear, and polite payment reminder email addressed to the company's CEO. The email should notify them about an upcoming or due invoice so they can review and take necessary action.\n\nHere is the parsed invoice data that you must use to fill in the email details:\n- Sender Name: {{ $json.fields['Sender Name'] }}\n- Sender Address: {{ $json.fields['Sender Address'] }}\n- Sender Email: {{ $json.fields['Sender Email'] }}\n- Invoice Date: {{ $json.fields['Invioce date '] }}\n- Due Date: {{ $json.fields['Due Date'] }}\n- Total Amount: {{ $json.fields['Total Amount '] }}\n\nInstructions:\n1. Write a ready-to-send professional email body. Do not use generic placeholders like [Your Name] or [Company Name] where actual data is available; use the provided data.\n2. Keep the tone formal, executive, and concise.\n3. Clearly highlight the Total Amount, Invoice Date, and specifically the Due Date so the CEO knows the urgency.\n4. Include a clear subject line at the beginning of the output (e.g., Subject: Payment Reminder...).\n5. Output ONLY the final email text ready to be sent. Do not add any extra conversational filler, explanations, or code blocks around the email.",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -112,
+        -544
+      ],
+      "id": "f8993810-4dfc-4f95-a2d3-4528b304afa5",
+      "name": "AI: Draft CEO Reminder Email"
+    },
+    {
+      "parameters": {
+        "model": "qwen3-vl-plus",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAlibabaCloud",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -336
+      ],
+      "id": "f3a2ea14-5f41-42d7-8f51-57bf744ac032",
+      "name": "Model: Qwen (Email Drafter)",
+      "credentials": {
+        "alibabaCloudApi": {
+          "id": "",
+          "name": "Qwen Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"subject\": {\n      \"type\": \"string\",\n      \"description\": \"Clear subject line for the payment reminder email\"\n    },\n    \"body\": {\n      \"type\": \"string\",\n      \"description\": \"The complete ready-to-send email body addressed to the CEO\"\n    }\n  },\n  \"required\": [\"subject\", \"body\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        32,
+        -336
+      ],
+      "id": "4df0680d-ca0c-471a-b97d-95683fe289c6",
+      "name": "Parser: Email JSON Schema"
+    },
+    {
+      "parameters": {
+        "sendTo": "ceo@yourcompany.com",
+        "subject": "={{ $json.output.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.output.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        -544
+      ],
+      "id": "6bdfa037-1888-4b25-973c-b4dfa730c450",
+      "name": "Email: Send Reminder to CEO",
+      "webhookId": "a5f289a7-fc41-4d82-9e1a-d6c5801a8c43",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Invoice Processing Pipeline: Form Upload -> Airtable Entry -> CEO Email Notification\"",
+        "height": 80,
+        "width": 688
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -352,
+        -864
+      ],
+      "typeVersion": 1,
+      "id": "252937ec-0a5c-4a69-9454-a4914713fae5",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Trigger: Invoice Form Upload": {
+      "main": [
+        [
+          {
+            "node": "Extract: PDF Raw Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract: PDF Raw Text": {
+      "main": [
+        [
+          {
+            "node": "AI: Parse Invoice Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI: Parse Invoice Fields": {
+      "main": [
+        [
+          {
+            "node": "DB: Save Invoice to Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model: Qwen (Invoice Parser)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI: Parse Invoice Fields",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DB: Save Invoice to Airtable": {
+      "main": [
+        [
+          {
+            "node": "AI: Draft CEO Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI: Draft CEO Reminder Email": {
+      "main": [
+        [
+          {
+            "node": "Email: Send Reminder to CEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model: Qwen (Email Drafter)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI: Draft CEO Reminder Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser: Email JSON Schema": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI: Draft CEO Reminder Email",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d53ce150-f7b9-4bca-a2a7-cd86c9a1b659",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": ""
+  },
+  "nodeGroups": [],
+  "id": "768qs0GYhtWoDckD",
+  "tags": []
+}
